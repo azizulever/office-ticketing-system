@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Ticket - Office Ticketing System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2><i class="bi bi-plus-circle me-2"></i>Create New Ticket</h2>
+                <p class="text-muted mb-0">Submit a new support request</p>
+            </div>
+            <a href="{% url 'employee_dashboard' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-file-text me-2"></i>Ticket Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.title.id_for_label }}" class="form-label fw-medium">
+                            <i class="bi bi-card-heading me-2"></i>Title <span class="text-danger">*</span>
+                        </label>
+                        {{ form.title }}
+                        <div class="form-text">Provide a clear, concise title for your issue</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.description.id_for_label }}" class="form-label fw-medium">
+                            <i class="bi bi-chat-square-text me-2"></i>Description <span class="text-danger">*</span>
+                        </label>
+                        {{ form.description }}
+                        <div class="form-text">Describe your problem in detail. Include steps to reproduce the issue if applicable.</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.priority.id_for_label }}" class="form-label fw-medium">
+                            <i class="bi bi-flag me-2"></i>Priority Level <span class="text-danger">*</span>
+                        </label>
+                        {{ form.priority }}
+                        <div class="form-text">
+                            <small>
+                                <strong>Low:</strong> Minor issues that don't affect work<br>
+                                <strong>Medium:</strong> Issues that slow down work<br>
+                                <strong>High:</strong> Issues that significantly impact work<br>
+                                <strong>Urgent:</strong> Critical issues that completely block work
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-2"></i>Create Ticket
+                        </button>
+                        <a href="{% url 'employee_dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Help Section -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-question-circle me-2"></i>Need Help?</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-lightbulb me-2 text-warning"></i>Tips for Better Support</h6>
+                        <ul class="list-unstyled small">
+                            <li class="mb-1">• Be specific about the problem</li>
+                            <li class="mb-1">• Include error messages if any</li>
+                            <li class="mb-1">• Mention what you were trying to do</li>
+                            <li class="mb-1">• Set appropriate priority level</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-clock me-2 text-info"></i>Response Times</h6>
+                        <ul class="list-unstyled small">
+                            <li class="mb-1">• <span class="badge priority-urgent">Urgent</span> Within 1 hour</li>
+                            <li class="mb-1">• <span class="badge priority-high">High</span> Within 4 hours</li>
+                            <li class="mb-1">• <span class="badge priority-medium">Medium</span> Within 1 day</li>
+                            <li class="mb-1">• <span class="badge priority-low">Low</span> Within 3 days</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

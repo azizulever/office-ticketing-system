@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block title %}Ticket Details - Office Ticketing System{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2><i class="bi bi-file-text me-2"></i>Ticket #{{ ticket.id }}</h2>
+                <p class="text-muted mb-0">View ticket details and feedback</p>
+            </div>
+            <a href="{% if user.is_staff %}{% url 'admin_dashboard' %}{% else %}{% url 'employee_dashboard' %}{% endif %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Status Alert for Resolved Tickets -->
+{% if ticket.status == 'resolved' %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="alert alert-success" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill me-3 fs-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">Ticket Resolved!</h5>
+                    <p class="mb-0">Great news! Your ticket has been resolved by our admin team. If you need further assistance, feel free to create a new ticket.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% elif ticket.status == 'ongoing' %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="alert alert-warning" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-arrow-clockwise me-3 fs-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">Work in Progress</h5>
+                    <p class="mb-0">Your ticket is currently being worked on by our admin team. We'll update you soon!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% elif ticket.status == 'closed' %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="alert alert-secondary" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-x-circle-fill me-3 fs-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">Ticket Closed</h5>
+                    <p class="mb-0">This ticket has been closed. If you need further assistance, please create a new ticket.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <!-- Ticket Details -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{{ ticket.title }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong><i class="bi bi-person me-2"></i>Employee:</strong></div>
+                    <div class="col-sm-9">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-person-circle me-2 text-muted fs-4"></i>
+                            <div>
+                                <div class="fw-medium">{{ ticket.employee.first_name|default:ticket.employee.username }}</div>
+                                <small class="text-muted">{{ ticket.employee.email }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong><i class="bi bi-flag me-2"></i>Priority:</strong></div>
+                    <div class="col-sm-9">
+                        <span class="badge priority-{{ ticket.priority }} fs-6">
+                            {% if ticket.priority == 'urgent' %}
+                                <i class="bi bi-exclamation-triangle me-1"></i>
+                            {% elif ticket.priority == 'high' %}
+                                <i class="bi bi-arrow-up me-1"></i>
+                            {% elif ticket.priority == 'medium' %}
+                                <i class="bi bi-dash me-1"></i>
+                            {% else %}
+                                <i class="bi bi-arrow-down me-1"></i>
+                            {% endif %}
+                            {{ ticket.get_priority_display }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong><i class="bi bi-clock me-2"></i>Status:</strong></div>
+                    <div class="col-sm-9">
+                        <span class="badge status-{{ ticket.status }} fs-6">
+                            {% if ticket.status == 'open' %}
+                                <i class="bi bi-circle me-1"></i>
+                            {% elif ticket.status == 'ongoing' %}
+                                <i class="bi bi-arrow-clockwise me-1"></i>
+                            {% elif ticket.status == 'resolved' %}
+                                <i class="bi bi-check-circle me-1"></i>
+                            {% else %}
+                                <i class="bi bi-x-circle me-1"></i>
+                            {% endif %}
+                            {{ ticket.get_status_display }}
+                        </span>
+                        {% if ticket.status == 'resolved' %}
+                            <small class="text-success ms-2">
+                                <i class="bi bi-check-circle me-1"></i>Issue has been resolved
+                            </small>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong><i class="bi bi-calendar me-2"></i>Created:</strong></div>
+                    <div class="col-sm-9">{{ ticket.created_at|date:"M d, Y H:i" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong><i class="bi bi-calendar-check me-2"></i>Last Updated:</strong></div>
+                    <div class="col-sm-9">{{ ticket.updated_at|date:"M d, Y H:i" }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3"><strong><i class="bi bi-file-text me-2"></i>Description:</strong></div>
+                    <div class="col-sm-9">
+                        <div class="p-3 bg-light rounded">
+                            {{ ticket.description|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar with actions -->
+    <div class="col-lg-4">
+        <!-- Ticket Status Card -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Ticket Status</h6>
+            </div>
+            <div class="card-body text-center">
+                {% if ticket.status == 'resolved' %}
+                    <i class="bi bi-check-circle-fill text-success display-4"></i>
+                    <h5 class="mt-2 text-success">Resolved</h5>
+                    <p class="text-muted mb-0">Your issue has been resolved by our admin team.</p>
+                {% elif ticket.status == 'ongoing' %}
+                    <i class="bi bi-arrow-clockwise text-warning display-4"></i>
+                    <h5 class="mt-2 text-warning">In Progress</h5>
+                    <p class="text-muted mb-0">We're currently working on your ticket.</p>
+                {% elif ticket.status == 'closed' %}
+                    <i class="bi bi-x-circle-fill text-secondary display-4"></i>
+                    <h5 class="mt-2 text-secondary">Closed</h5>
+                    <p class="text-muted mb-0">This ticket has been closed.</p>
+                {% else %}
+                    <i class="bi bi-circle text-info display-4"></i>
+                    <h5 class="mt-2 text-info">Open</h5>
+                    <p class="text-muted mb-0">We've received your ticket and will respond soon.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        {% if not user.is_staff %}
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-lightning me-2"></i>Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'create_ticket' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>Create New Ticket
+                    </a>
+                    <a href="{% url 'employee_dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-list me-2"></i>View All My Tickets
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Admin Feedback -->
+{% if feedback_list %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-chat-square-text me-2"></i>Admin Feedback</h5>
+            </div>
+            <div class="card-body">
+                {% for feedback in feedback_list %}
+                <div class="d-flex mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-person-badge fs-2 text-primary"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>{{ feedback.admin_user.first_name|default:feedback.admin_user.username }}</strong>
+                                <span class="badge bg-primary ms-2">Admin</span>
+                            </div>
+                            <small class="text-muted">
+                                <i class="bi bi-clock me-1"></i>{{ feedback.created_at|date:"M d, Y H:i" }}
+                            </small>
+                        </div>
+                        <div class="mt-2 p-3 bg-primary bg-opacity-10 rounded">
+                            {{ feedback.message|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center py-4">
+                <i class="bi bi-chat-square-dots display-4 text-muted"></i>
+                <h5 class="mt-3">No feedback yet</h5>
+                <p class="text-muted mb-0">Our admin team will provide feedback on your ticket soon.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
